@@ -19,27 +19,48 @@ int main(void){
     double Vrms; //RMS calculation returned by my function
     int i;
 
-    //fill in time array
-    T[0] = Tmin;  
+    // //fill in time array
+    // T[0] = Tmin;  
+    // for(i=1; i<Npts; i++){
+    //     T[i] = T[i-1] + Tstep;  
+    // }
+
+    //with pointers
+    *T_ptr = Tmin;
     for(i=1; i<Npts; i++){
-        T[i] = T[i-1] + Tstep;  
+        *(T_ptr + i) = *(T_ptr + (i-1)) + Tstep;
     }
 
-    /*fill vsin[] array - sin of time*/
-    for(i=0; i<Npts; i++){
-        Vsin[i] = sin(T[i]);
-    }
+    
 
     printf("Welcome to the RSM Calculator!\n");
     printf("\tEnter the voltage amplitude of your sine wave: ");
     scanf("%lf", &Vamp);
 
+    /*fill vsin[] array - sin of time*/
+    for(i=0; i<Npts; i++){
+        Vsin[i] = Vamp * sin(T[i]);
+    }
+
     Vrms = rms_calc(Vsin_ptr, Npts);
 
+    for(i=0; i<Npts; i++){
+        printf("T[%d]=%.3lf\tVsin[%d]=%.3lf\n", i,T[i],i,Vsin[i]);
+    }
+
+    printf("\nThe RMS value for your sine wave is: %.3lf Volts\n", Vrms);
 
     return 0;
 }
 
 double rms_calc(const double *Vptr, int N){
+    int sSum = 0;
+    int i;
+    for(i=0; i<N; i++){
+        sSum += (*(Vptr + i) * *(Vptr + i));
+    }
+
+    double answer = sqrt(sSum/N);
+    return answer;
 
 }
